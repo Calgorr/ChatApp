@@ -11,4 +11,5 @@ func RegisterRoutes(g *echo.Group) {
 
 	user := g.Group("/users")
 	user.POST("", handle.SignUp)
+	user.POST("/login", handle.Login)
 }
