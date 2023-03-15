@@ -8,5 +8,5 @@ import (
 func main() {
 	e := echo.New()
 	routes.RegisterRoutes(e.Group("/api"))
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":4545"))
 }

@@ -13,15 +13,20 @@ import (
 func SignUp(c echo.Context) error {
 	var user *model.User
 	user, err := bind(c, user)
-	//add to database
+	err = db.AddUser(user)
+	if err != nil {
+		return err
+	}
 	c.String(http.StatusOK, "success")
-	return err
+	return nil
 }
 
 func Login(c echo.Context) error {
 	var user *model.User
 	user, err := bind(c, user)
-	//check database
+	if userValidation(user) == false {
+		return c.String(http.StatusUnauthorized, "unauthorized")
+	}
 	token, err := authentication.GenerateJWT()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "internal server error")
