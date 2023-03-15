@@ -18,6 +18,9 @@ var rdb0 = redis.NewClient(&redis.Options{
 })
 
 func AddUser(user *model.User) error {
+	if rdb0.Get(ctx, user.Username).Val() != "" {
+		return errors.New("user already exists")
+	}
 	return rdb0.Set(ctx, user.Username, user.Password, 0).Err()
 }
 

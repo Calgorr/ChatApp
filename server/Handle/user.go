@@ -2,6 +2,7 @@ package handle
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	authentication "github.com/Calgorr/ChatApp/server/Authentication"
@@ -15,7 +16,7 @@ func SignUp(c echo.Context) error {
 	user, err := bind(c, user)
 	err = db.AddUser(user)
 	if err != nil {
-		return err
+		return c.String(http.StatusConflict, "user already exists")
 	}
 	c.String(http.StatusOK, "success")
 	return nil
@@ -29,6 +30,7 @@ func Login(c echo.Context) error {
 	}
 	token, err := authentication.GenerateJWT()
 	if err != nil {
+		fmt.Println(err)
 		return c.String(http.StatusInternalServerError, "internal server error")
 	}
 	c.Response().Header().Set(echo.HeaderAuthorization, token)
