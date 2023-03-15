@@ -1,9 +1,12 @@
 package authentication
 
 import (
+	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
 )
 
 const secret = "calgor"
@@ -20,4 +23,24 @@ func GenerateJWT() (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func ValidateJWT(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		auth := c.Request().Header.Get("Authorization")
+		token, err := jwt.Parse(auth, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("there was an error")
+			}
+			return []byte(secret), nil
+		})
+		if err != nil {
+			fmt.Println(err, token)
+			return c.String(http.StatusUnauthorized, "unauthorized")
+		}
+		if token.Valid {
+			return next(c)
+		}
+		return c.String(http.StatusUnauthorized, "unauthorized")
+	}
 }
