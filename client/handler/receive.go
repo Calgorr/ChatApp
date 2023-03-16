@@ -14,7 +14,7 @@ var rdb3 = redis.NewClient(&redis.Options{
 
 var ctx = context.Background()
 
-func Recive(groupName string) {
+func Receive(groupName string) {
 	pubsub := rdb3.Subscribe(ctx, groupName)
 	defer pubsub.Close()
 	for {

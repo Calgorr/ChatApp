@@ -74,7 +74,7 @@ func GetGroups(username string) ([]model.Group, error) {
 	for _, key := range cmd.Val().([]interface{}) {
 		group := &model.Group{}
 		rdb2.Get(ctx, key.(string)).Scan(group)
-		if group.CheckMember(*&model.User{Username: username}) {
+		if !group.CheckMember(*&model.User{Username: username}) {
 			groups = append(groups, *group)
 		}
 	}

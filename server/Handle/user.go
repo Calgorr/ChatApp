@@ -22,10 +22,6 @@ func SignUp(c echo.Context) error {
 	return nil
 }
 
-func Hello(c echo.Context) error {
-	return c.String(http.StatusOK, "hello world")
-}
-
 func Login(c echo.Context) error {
 	var user *model.User
 	user, err := user.Bind(c)
