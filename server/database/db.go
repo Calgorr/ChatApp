@@ -94,3 +94,19 @@ func AddMemberToGroup(groupName string, user *model.User) error {
 func Publish(message *model.Message) error {
 	return rdb3.Publish(ctx, message.GroupName, message.Content).Err()
 }
+
+func GetMessages(groupName string) ([]model.Message, error) {
+	cmd := rdb1.Do(ctx, "keys", "*")
+	if cmd.Err() != nil {
+		return nil, cmd.Err()
+	}
+	var messages []model.Message
+	for _, key := range cmd.Val().([]interface{}) {
+		message := &model.Message{}
+		rdb1.Get(ctx, key.(string)).Scan(message)
+		if message.GroupName == groupName {
+			messages = append(messages, *message)
+		}
+	}
+	return messages, nil
+}

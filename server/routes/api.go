@@ -13,11 +13,13 @@ func RegisterRoutes(g *echo.Group) {
 	user.POST("/login", handle.Login)
 
 	message := g.Group("/messages")
+	message.Use(middleware.JWT([]byte("calgor")))
 	message.POST("/newmessage", handle.SendMessage)
 
 	groups := g.Group("/groups")
+	groups.Use(middleware.JWT([]byte("calgor")))
 	groups.POST("/newgroup", handle.CreateGroup)
-	groups.POST("/addmember", handle.AddMemberToGroup)
+	groups.POST("/addmember", handle.AddMember)
 	groups.POST("/getgroups", handle.GetGroups)
 	groups.GET("/getmessages", handle.GetMessages)
 

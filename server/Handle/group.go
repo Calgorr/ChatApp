@@ -22,11 +22,31 @@ func CreateGroup(c echo.Context) error {
 func AddMember(c echo.Context) error {
 	var user *model.User
 	user, err := user.Bind(c)
-	groupName:=c.QueryParam("groupname")
+	groupName := c.QueryParam("groupname")
 	if err != nil {
 		return c.String(500, "internal server error")
 	}
-	err = db.AddMemberToGroup(groupName,user.Username)
+	err = db.AddMemberToGroup(groupName, user)
 	if err != nil {
+		return c.String(500, "internal server error")
+	}
+	return c.String(200, "success")
+}
 
+func GetGroups(c echo.Context) error {
+	username := c.QueryParam("username")
+	groups, err := db.GetGroups(username)
+	if err != nil {
+		return c.String(500, "internal server error")
+	}
+	return c.JSON(200, groups)
+}
+
+func GetMessages(c echo.Context) error {
+	groupName := c.QueryParam("groupname")
+	messages, err := db.GetMessages(groupName)
+	if err != nil {
+		return c.String(500, "internal server error")
+	}
+	return c.JSON(200, messages)
 }
