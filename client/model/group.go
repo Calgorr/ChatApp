@@ -1,9 +1,11 @@
 package model
 
+import "time"
+
 type Group struct {
 	GroupName    string
 	Creator      string
-	CreationDate string
+	CreationDate time.Time
 	Description  string
 	members      []User
 }

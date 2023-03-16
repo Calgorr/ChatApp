@@ -7,19 +7,19 @@ import (
 )
 
 type Group struct {
-	GroupName    string
-	Creator      string
-	CreationDate string
-	Description  string
-	members      []User
+	GroupName    string `json:"groupname" form:"groupname"`
+	Creator      string `json:"creator" form:"creator"`
+	CreationDate string `json:"creationdate" form:"creationdate"`
+	Description  string `json:"description" form:"description"`
+	Members      []User `json:"members" form:"members"`
 }
 
 func (g *Group) AddMember(u User) {
-	g.members = append(g.members, u)
+	g.Members = append(g.Members, u)
 }
 
 func (g *Group) CheckMember(u User) bool {
-	for _, member := range g.members {
+	for _, member := range g.Members {
 		if member.Username == u.Username {
 			return true
 		}

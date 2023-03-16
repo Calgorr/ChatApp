@@ -1,16 +1,20 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"os/exec"
+	"time"
 
-	"github.com/Calgorr/ChatApp/client/cli"
 	"github.com/Calgorr/ChatApp/client/model"
 	"github.com/labstack/echo/v4"
 )
 
 func EnterGroupChat(user *model.User, groupname string) {
-	cli.ClearConsole()
+	ClearConsole()
 	var messages []model.Message
 
 	req, _ := http.NewRequest(http.MethodGet, "localhost:4545/api/groups/getmessages?groupname="+groupname, nil)
@@ -26,7 +30,7 @@ func EnterGroupChat(user *model.User, groupname string) {
 		panic(err)
 	}
 	for _, v := range messages {
-		println(v.Sender, v.Send_At, v.Content)
+		fmt.Println(v.Sender, v.Send_At, v.Content)
 	}
 
 	go SendMessage(groupname, user)
@@ -35,9 +39,80 @@ func EnterGroupChat(user *model.User, groupname string) {
 }
 
 func CreateGroup(user *model.User, groupname string) {
-	// TODO
+	var description string
+	println("Enter group description: ")
+	fmt.Scanln(&description)
+
+	group := &model.Group{
+		GroupName:    groupname,
+		Description:  description,
+		Creator:      user.Username,
+		CreationDate: time.Now(),
+	}
+	json, _ := json.Marshal(group)
+	req, _ := http.NewRequest(http.MethodPost, "localhost:4545/api/groups/newgroup", bytes.NewBuffer(json))
+	req.Header.Set(echo.HeaderAuthorization, model.Token)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		println("Group created successfully")
+	} else {
+		println("Group creation failed")
+	}
+	LoginMenu(user)
+
 }
 
 func JoinGroup(user *model.User) {
-	// TODO
+	var groupname string
+	println("Enter group name: ")
+	fmt.Scanln(&groupname)
+
+	req, _ := http.NewRequest(http.MethodGet, "localhost:4545/api/groups/joingroup?groupname="+groupname, nil)
+	req.Header.Set(echo.HeaderAuthorization, model.Token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		println("Joined group successfully")
+	} else {
+		println("Group join failed")
+	}
+	LoginMenu(user)
+}
+
+func LoginMenu(user *model.User) {
+	fmt.Println("1-Enter a GroupChat")
+	fmt.Println("2-Create a Group")
+	fmt.Println("3-Join a Group")
+	var order int
+	fmt.Scanln(&order)
+	switch order {
+	case 1:
+		var groupname string
+		fmt.Println("Group name :")
+		fmt.Scan(&groupname)
+		EnterGroupChat(user, groupname)
+	case 2:
+		var groupName string
+		fmt.Println("Group name :")
+		fmt.Scan(&groupName)
+		CreateGroup(user, groupName)
+	case 3:
+		JoinGroup(user)
+
+	}
+
+}
+
+func ClearConsole() {
+	cmd := exec.Command("clear") //Linux example, its tested
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }
