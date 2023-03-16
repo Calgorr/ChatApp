@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/Calgorr/ChatApp/server/model"
 	redis "github.com/redis/go-redis/v9"
@@ -46,7 +47,7 @@ func GetUser(username, password string) (*model.User, error) {
 }
 
 func AddMessage(message *model.Message) error {
-	return rdb1.Set(ctx, message.GroupName, message, 0).Err()
+	return rdb1.Set(ctx, message.GroupName, message, 1*time.Hour).Err()
 }
 
 func Publish(message *model.Message) error {

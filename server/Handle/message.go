@@ -11,11 +11,11 @@ import (
 func SendMessage(c echo.Context) error {
 	var ms *model.Message
 	ms, err := ms.Bind(c)
-	if err != nil {
-		return err
-	}
 	ms.Send_At = time.Now()
-	db.AddMessage(ms)
-	db.Publish(ms)
-	return nil
+	err = db.AddMessage(ms)
+	err = db.Publish(ms)
+	if err != nil {
+		return c.String(500, "internal server error")
+	}
+	return c.String(200, "success")
 }
