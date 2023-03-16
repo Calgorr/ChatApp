@@ -56,8 +56,24 @@ func AddMessage(message *model.Message) error {
 	return rdb1.Set(ctx, message.GroupName, message, 1*time.Hour).Err()
 }
 
-func AddGroup() {
+func AddGroup(group *model.Group) error {
+	return rdb2.Set(ctx, group.GroupName, group, 0).Err()
+}
 
+func GetGroups(username string) ([]model.Group, error) {
+	cmd := rdb2.Do(ctx, "keys", "*")
+	if cmd.Err() != nil {
+		return nil, cmd.Err()
+	}
+	var groups []model.Group
+	for _, key := range cmd.Val().([]interface{}) {
+		group := &model.Group{}
+		rdb2.Get(ctx, key.(string)).Scan(group)
+		if group.CheckMember(*&model.User{Username: username}) {
+			groups = append(groups, *group)
+		}
+	}
+	return groups, nil
 }
 
 func Publish(message *model.Message) error {
