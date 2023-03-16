@@ -24,6 +24,12 @@ var rdb1 = redis.NewClient(&redis.Options{
 	DB:       1,
 })
 
+var rdb2 = redis.NewClient(&redis.Options{
+	Addr:     "localhost:6379",
+	Password: "", // no password set
+	DB:       2,
+})
+
 func AddUser(user *model.User) error {
 	if rdb0.Get(ctx, user.Username).Val() != "" {
 		return errors.New("user already exists")
@@ -48,6 +54,10 @@ func GetUser(username, password string) (*model.User, error) {
 
 func AddMessage(message *model.Message) error {
 	return rdb1.Set(ctx, message.GroupName, message, 1*time.Hour).Err()
+}
+
+func AddGroup() {
+
 }
 
 func Publish(message *model.Message) error {
