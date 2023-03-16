@@ -1,12 +1,20 @@
 package model
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
 
 type User struct {
 	Username string `json:"username" form:"username"`
 	Password string `json:"password" form:"password"`
 }
 
-func (user *User) ValidatePassword(pass string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass)) == nil
+func (user *User) Bind(c echo.Context) (*User, error) {
+	err := c.Bind(&user)
+	if err != nil {
+		return nil, c.String(http.DefaultMaxHeaderBytes, "bad request")
+	}
+	return user, nil
 }

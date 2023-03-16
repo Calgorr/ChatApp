@@ -17,6 +17,12 @@ var rdb0 = redis.NewClient(&redis.Options{
 	DB:       0,  // use default DB
 })
 
+var rdb1 = redis.NewClient(&redis.Options{
+	Addr:     "localhost:6379",
+	Password: "", // no password set
+	DB:       1,
+})
+
 func AddUser(user *model.User) error {
 	if rdb0.Get(ctx, user.Username).Val() != "" {
 		return errors.New("user already exists")
@@ -37,4 +43,12 @@ func GetUser(username, password string) (*model.User, error) {
 		Password: val,
 	}
 	return user, nil
+}
+
+func AddMessage(message *model.Message) error {
+	return rdb1.Set(ctx, message.GroupName, message, 0).Err()
+}
+
+func Publish(message *model.Message) error {
+	return rdb1.Publish(ctx, message.GroupName, message.Content).Err()
 }

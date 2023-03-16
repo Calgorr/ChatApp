@@ -13,7 +13,7 @@ import (
 
 func SignUp(c echo.Context) error {
 	var user *model.User
-	user, err := bind(c, user)
+	user, err := user.Bind(c)
 	err = db.AddUser(user)
 	if err != nil {
 		return c.String(http.StatusConflict, "user already exists")
@@ -28,7 +28,7 @@ func Hello(c echo.Context) error {
 
 func Login(c echo.Context) error {
 	var user *model.User
-	user, err := bind(c, user)
+	user, err := user.Bind(c)
 	if userValidation(user) == false {
 		return c.String(http.StatusUnauthorized, "unauthorized")
 	}
@@ -49,12 +49,4 @@ func userValidation(user *model.User) bool {
 		return false
 	}
 	return true
-}
-
-func bind(c echo.Context, user *model.User) (*model.User, error) {
-	err := c.Bind(&user)
-	if err != nil {
-		return nil, c.String(http.DefaultMaxHeaderBytes, "bad request")
-	}
-	return user, nil
 }
