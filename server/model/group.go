@@ -1,5 +1,11 @@
 package model
 
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
+
 type Group struct {
 	GroupName    string
 	Creator      string
@@ -19,4 +25,12 @@ func (g *Group) CheckMember(u User) bool {
 		}
 	}
 	return false
+}
+
+func (g *Group) Bind(c echo.Context) (*Group, error) {
+	err := c.Bind(&g)
+	if err != nil {
+		return nil, c.String(http.DefaultMaxHeaderBytes, "bad request")
+	}
+	return g, nil
 }

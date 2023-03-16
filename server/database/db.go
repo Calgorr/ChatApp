@@ -29,6 +29,11 @@ var rdb2 = redis.NewClient(&redis.Options{
 	Password: "", // no password set
 	DB:       2,
 })
+var rdb3 = redis.NewClient(&redis.Options{
+	Addr:     "localhost:6379",
+	Password: "", // no password set
+	DB:       2,
+})
 
 func AddUser(user *model.User) error {
 	if rdb0.Get(ctx, user.Username).Val() != "" {
@@ -76,6 +81,16 @@ func GetGroups(username string) ([]model.Group, error) {
 	return groups, nil
 }
 
+func AddMemberToGroup(groupName string, user *model.User) error {
+	group := &model.Group{}
+	rdb2.Get(ctx, groupName).Scan(group)
+	if group.CheckMember(*user) {
+		return errors.New("user already exists in group")
+	}
+	group.AddMember(*user)
+	return rdb2.Set(ctx, groupName, group, 0).Err()
+}
+
 func Publish(message *model.Message) error {
-	return rdb1.Publish(ctx, message.GroupName, message.Content).Err()
+	return rdb3.Publish(ctx, message.GroupName, message.Content).Err()
 }
