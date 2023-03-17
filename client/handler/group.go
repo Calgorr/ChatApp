@@ -20,6 +20,13 @@ func EnterGroupChat(user *model.User, groupname string) {
 	req, _ := http.NewRequest(http.MethodGet, "http://localhost:4545/api/groups/getmessages?groupname="+groupname, nil)
 	req.Header.Set(echo.HeaderAuthorization, model.Token)
 	res, err := http.DefaultClient.Do(req)
+	if res.StatusCode == http.StatusNotFound {
+		fmt.Println("Group not found")
+		time.Sleep(2 * time.Second)
+		ClearConsole()
+		LoginMenu(user)
+	}
+
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +37,7 @@ func EnterGroupChat(user *model.User, groupname string) {
 		panic(err)
 	}
 	for _, v := range messages {
-		fmt.Println(v.Sender, " : ", v.Content)
+		fmt.Println(v.Sender, ": ", v.Content)
 	}
 
 	done := make(chan bool)
@@ -92,6 +99,30 @@ func JoinGroup(user *model.User) {
 		println("Group join failed")
 	}
 	LoginMenu(user)
+}
+
+func GetGroupInfo(groupname string) {
+	var group model.Group
+	req, _ := http.NewRequest(http.MethodGet, "http://localhost:4545/api/groups/getgroup?groupname="+groupname, nil)
+	req.Header.Set(echo.HeaderAuthorization, model.Token)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+
+	err = json.NewDecoder(res.Body).Decode(&group)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Group name: ", group.GroupName)
+	fmt.Println("Group description: ", group.Description)
+	fmt.Println("Group creator: ", group.Creator)
+	fmt.Println("Group creation date: ", group.CreationDate)
+	fmt.Println("Group members: ")
+	for _, v := range group.Members {
+		fmt.Println(v.Username)
+	}
 }
 
 func LoginMenu(user *model.User) {

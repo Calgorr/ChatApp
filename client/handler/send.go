@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/Calgorr/ChatApp/client/model"
 )
@@ -13,10 +14,15 @@ import (
 func SendMessage(groupName string, user *model.User, signal chan<- bool) error {
 	for {
 		var content string
-		fmt.Scan(&content)
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		content = scanner.Text()
 		if content == "--quit" {
 			signal <- true
 			break
+		} else if content == "--information" {
+			GetGroupInfo(groupName)
+			continue
 		}
 		ms := &model.Message{
 			GroupName: groupName,

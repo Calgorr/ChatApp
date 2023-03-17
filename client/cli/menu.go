@@ -22,6 +22,7 @@ func MainMenu() {
 		user, err := handler.Login(username, password)
 		handler.ClearConsole()
 		if err != nil {
+			fmt.Println(err)
 			MainMenu()
 		}
 		handler.LoginMenu(user)
@@ -32,7 +33,11 @@ func MainMenu() {
 		fmt.Scan(&username)
 		fmt.Println("Password :")
 		fmt.Scan(&password)
-		handler.SignUp(username, password)
+		err := handler.SignUp(username, password)
+		handler.ClearConsole()
+		if err != nil {
+			fmt.Println(err)
+		}
 		MainMenu()
 	}
 }

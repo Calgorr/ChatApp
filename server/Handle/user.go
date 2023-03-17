@@ -26,7 +26,7 @@ func Login(c echo.Context) error {
 	var user *model.User
 	user, err := user.Bind(c)
 	if userValidation(user) == false {
-		return c.String(http.StatusUnauthorized, "unauthorized")
+		return c.String(http.StatusUnauthorized, "invalid credentials")
 	}
 	token, err := authentication.GenerateJWT()
 	if err != nil {

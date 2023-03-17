@@ -23,5 +23,6 @@ func RegisterRoutes(g *echo.Group) {
 	groups.POST("/addmember", handle.AddMember)
 	groups.POST("/getgroups", handle.GetGroups)
 	groups.GET("/getmessages", handle.GetMessages)
+	groups.GET("/getgroup", handle.GetGroup)
 
 }

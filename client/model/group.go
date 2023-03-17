@@ -7,5 +7,5 @@ type Group struct {
 	Creator      string
 	CreationDate time.Time
 	Description  string
-	members      []User
+	Members      []User
 }

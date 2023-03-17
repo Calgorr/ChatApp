@@ -30,7 +30,11 @@ func Receive(groupName, sender string, signal <-chan bool) {
 				panic(err)
 			}
 			if !strings.Contains(msg.Payload, sender) {
-				fmt.Println(strings.Split(msg.Payload, " ")[0] + " : " + strings.Split(msg.Payload, " ")[1])
+				fmt.Print(strings.Split(msg.Payload, " ")[0] + ":")
+				for _, v := range strings.Split(msg.Payload, " ")[1:] {
+					fmt.Print(v)
+				}
+				fmt.Println()
 			}
 		}
 	}

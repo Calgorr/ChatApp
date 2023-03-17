@@ -92,7 +92,7 @@ func AddMemberToGroup(groupName string, user *model.User) error {
 }
 
 func Publish(message *model.Message) error {
-	return rdb3.Publish(ctx, message.GroupName, message.Content).Err()
+	return rdb3.Publish(ctx, message.GroupName, message.Sender+" "+message.Content).Err()
 }
 
 func GetMessages(groupName string) ([]model.Message, error) {
@@ -109,4 +109,14 @@ func GetMessages(groupName string) ([]model.Message, error) {
 		}
 	}
 	return messages, nil
+}
+
+func CheckGroup(groupName string) bool {
+	return rdb2.Get(ctx, groupName).Val() != ""
+}
+
+func GetGroup(groupName string) (*model.Group, error) {
+	group := &model.Group{}
+	rdb2.Get(ctx, groupName).Scan(group)
+	return group, nil
 }

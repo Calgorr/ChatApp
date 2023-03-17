@@ -47,6 +47,9 @@ func GetGroups(c echo.Context) error {
 }
 
 func GetMessages(c echo.Context) error {
+	if db.CheckGroup(c.QueryParam("groupname")) == false {
+		return c.String(404, "group not found")
+	}
 	groupName := c.QueryParam("groupname")
 	messages, err := db.GetMessages(groupName)
 	if err != nil {
@@ -54,4 +57,16 @@ func GetMessages(c echo.Context) error {
 	}
 	fmt.Println(messages)
 	return c.JSON(200, messages)
+}
+
+func GetGroup(c echo.Context) error {
+	groupName := c.QueryParam("groupname")
+	group, err := db.GetGroup(groupName)
+	for _, v := range group.Members {
+		v.Password = ""
+	}
+	if err != nil {
+		return c.String(500, "internal server error")
+	}
+	return c.JSON(200, group)
 }
