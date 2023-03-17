@@ -14,14 +14,20 @@ var rdb3 = redis.NewClient(&redis.Options{
 
 var ctx = context.Background()
 
-func Receive(groupName string) {
+func Receive(groupName string, signal <-chan bool) {
 	pubsub := rdb3.Subscribe(ctx, groupName)
 	defer pubsub.Close()
-	for {
-		msg, err := pubsub.ReceiveMessage(ctx)
-		if err != nil {
-			panic(err)
+	select {
+	case <-signal:
+		return
+	default:
+
+		for {
+			msg, err := pubsub.ReceiveMessage(ctx)
+			if err != nil {
+				panic(err)
+			}
+			println(msg.Payload)
 		}
-		println(msg.Payload)
 	}
 }

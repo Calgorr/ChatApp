@@ -33,9 +33,15 @@ func EnterGroupChat(user *model.User, groupname string) {
 		fmt.Println(v.Sender, v.Send_At, v.Content)
 	}
 
-	go SendMessage(groupname, user)
-	go Receive(groupname)
+	done := make(chan bool)
+	go SendMessage(groupname, user, done)
+	go Receive(groupname, done)
 
+	select {
+	case <-done:
+		ClearConsole()
+		LoginMenu(user)
+	}
 }
 
 func CreateGroup(user *model.User, groupname string) {

@@ -20,7 +20,8 @@ func Login(username, password string) (*model.User, error) {
 	req.Header.Set("Content-Type", "application/json")
 	resp, _ := http.DefaultClient.Do(req)
 	if resp.StatusCode != http.StatusOK {
-		// return fmt.Println("User does not exi")
+		fmt.Println("Login failed")
+		return nil, fmt.Errorf("login failed")
 	}
 	model.Token = resp.Header.Get(echo.HeaderAuthorization)
 	fmt.Println(model.Token)
