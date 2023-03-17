@@ -70,3 +70,14 @@ func GetGroup(c echo.Context) error {
 	}
 	return c.JSON(200, group)
 }
+
+func RemoveUser(c echo.Context) error {
+	groupName := c.QueryParam("groupname")
+	username := c.QueryParam("username")
+	err := db.RemoveUserFromGroup(groupName, username)
+	if err != nil {
+		fmt.Println(err)
+		return c.String(500, "internal server error")
+	}
+	return c.String(200, "success")
+}

@@ -28,6 +28,14 @@ func (g *Group) CheckMember(u User) bool {
 	return false
 }
 
+func (g *Group) RemoveMember(username string) {
+	for i, member := range g.Members {
+		if member.Username == username {
+			g.Members = append(g.Members[:i], g.Members[i+1:]...)
+		}
+	}
+}
+
 func (g *Group) Bind(c echo.Context) (*Group, error) {
 	err := c.Bind(&g)
 	if err != nil {

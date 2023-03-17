@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/Calgorr/ChatApp/server/model"
@@ -119,4 +120,24 @@ func GetGroup(groupName string) (*model.Group, error) {
 	group := &model.Group{}
 	rdb2.Get(ctx, groupName).Scan(group)
 	return group, nil
+}
+
+func GetUserByUsername(username string) *model.User {
+	user := &model.User{}
+	val, _ := rdb0.Get(ctx, username).Result()
+	user.Username = username
+	user.Password = val
+	return user
+}
+
+func RemoveUserFromGroup(groupName, username string) error {
+	group := &model.Group{}
+	rdb2.Get(ctx, groupName).Scan(group)
+	user := GetUserByUsername(username)
+	fmt.Println(user, "Moz")
+	if !group.CheckMember(*user) {
+		return errors.New("user does not exist in group")
+	}
+	group.RemoveMember(username)
+	return rdb2.Set(ctx, groupName, group, 0).Err()
 }

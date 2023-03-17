@@ -76,6 +76,7 @@ func CreateGroup(user *model.User, groupname string) {
 	} else {
 		println("Group creation failed")
 	}
+	ClearConsole()
 	LoginMenu(user)
 
 }
@@ -98,6 +99,7 @@ func JoinGroup(user *model.User) {
 	} else {
 		println("Group join failed")
 	}
+	ClearConsole()
 	LoginMenu(user)
 }
 
@@ -125,10 +127,28 @@ func GetGroupInfo(groupname string) {
 	}
 }
 
+func RemoveUserFromGroup(groupname string, user *model.User) {
+	req, _ := http.NewRequest(http.MethodDelete, "http://localhost:4545/api/groups/removeuser?groupname="+groupname+"&username="+user.Username, nil)
+	req.Header.Set(echo.HeaderAuthorization, model.Token)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer res.Body.Close()
+	ClearConsole()
+	if res.StatusCode == 200 {
+		println("User removed successfully")
+	} else {
+		println("User remove failed")
+	}
+	LoginMenu(user)
+}
+
 func LoginMenu(user *model.User) {
 	fmt.Println("1-Enter a GroupChat")
 	fmt.Println("2-Create a Group")
 	fmt.Println("3-Join a Group")
+	fmt.Println("4-Remove from a Group")
 	var order int
 	fmt.Scanln(&order)
 	switch order {
@@ -147,7 +167,11 @@ func LoginMenu(user *model.User) {
 	case 3:
 		JoinGroup(user)
 		ClearConsole()
-
+	case 4:
+		var groupname string
+		fmt.Println("Group name :")
+		fmt.Scan(&groupname)
+		RemoveUserFromGroup(groupname, user)
 	}
 
 }

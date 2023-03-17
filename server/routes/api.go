@@ -24,5 +24,6 @@ func RegisterRoutes(g *echo.Group) {
 	groups.POST("/getgroups", handle.GetGroups)
 	groups.GET("/getmessages", handle.GetMessages)
 	groups.GET("/getgroup", handle.GetGroup)
+	groups.DELETE("/removeuser", handle.RemoveUser)
 
 }
