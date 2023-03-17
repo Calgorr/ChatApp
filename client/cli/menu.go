@@ -20,6 +20,7 @@ func MainMenu() {
 		fmt.Println("Password :")
 		fmt.Scan(&password)
 		user, err := handler.Login(username, password)
+		handler.ClearConsole()
 		if err != nil {
 			MainMenu()
 		}

@@ -30,12 +30,12 @@ func EnterGroupChat(user *model.User, groupname string) {
 		panic(err)
 	}
 	for _, v := range messages {
-		fmt.Println(v.Sender, v.Send_At, v.Content)
+		fmt.Println(v.Sender, " : ", v.Content)
 	}
 
 	done := make(chan bool)
 	go SendMessage(groupname, user, done)
-	go Receive(groupname, done)
+	go Receive(groupname, user.Username, done)
 
 	select {
 	case <-done:

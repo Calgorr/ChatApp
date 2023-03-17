@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -14,7 +16,7 @@ var rdb3 = redis.NewClient(&redis.Options{
 
 var ctx = context.Background()
 
-func Receive(groupName string, signal <-chan bool) {
+func Receive(groupName, sender string, signal <-chan bool) {
 	pubsub := rdb3.Subscribe(ctx, groupName)
 	defer pubsub.Close()
 	select {
@@ -27,7 +29,9 @@ func Receive(groupName string, signal <-chan bool) {
 			if err != nil {
 				panic(err)
 			}
-			println(msg.Payload)
+			if !strings.Contains(msg.Payload, sender) {
+				fmt.Println(strings.Split(msg.Payload, " ")[0] + " : " + strings.Split(msg.Payload, " ")[1])
+			}
 		}
 	}
 }
