@@ -58,7 +58,7 @@ func GetUser(username, password string) (*model.User, error) {
 }
 
 func AddMessage(message *model.Message) error {
-	return rdb1.Set(ctx, message.GroupName, message, 1*time.Hour).Err()
+	return rdb1.Set(ctx, message.GroupName+time.Now().String(), message, 1*time.Hour).Err()
 }
 
 func AddGroup(group *model.Group) error {
@@ -96,7 +96,7 @@ func Publish(message *model.Message) error {
 }
 
 func GetMessages(groupName string) ([]model.Message, error) {
-	cmd := rdb1.Do(ctx, "keys", "*")
+	cmd := rdb1.Do(ctx, "keys", ".*"+groupName+".*")
 	if cmd.Err() != nil {
 		return nil, cmd.Err()
 	}

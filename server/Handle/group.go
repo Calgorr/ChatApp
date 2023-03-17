@@ -9,26 +9,24 @@ import (
 )
 
 func CreateGroup(c echo.Context) error {
-	//fmt.Println("skdvsdkv")
 	var g *model.Group
 	g, err := g.Bind(c)
 	if err != nil {
-		fmt.Println("skdvsd324324kv")
 		return c.String(500, "internal server error")
 	}
 	err = db.AddGroup(g)
 	if err != nil {
-		fmt.Println("skdvsdkv")
-		fmt.Println(err)
 		return c.String(500, "internal server error")
 	}
 	return c.String(200, "success")
 }
 
 func AddMember(c echo.Context) error {
+	fmt.Println("skfnvjfvnj")
 	var user *model.User
 	user, err := user.Bind(c)
 	groupName := c.QueryParam("groupname")
+	fmt.Println(groupName)
 	if err != nil {
 		return c.String(500, "internal server error")
 	}

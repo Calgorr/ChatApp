@@ -26,5 +26,6 @@ func SignUp(username, password string) error {
 		log.Default().Println(resp)
 		return errors.New("something went wrong")
 	}
+	ClearConsole()
 	return nil
 }

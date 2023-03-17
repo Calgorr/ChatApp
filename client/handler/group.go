@@ -17,7 +17,7 @@ func EnterGroupChat(user *model.User, groupname string) {
 	ClearConsole()
 	var messages []model.Message
 
-	req, _ := http.NewRequest(http.MethodGet, "localhost:4545/api/groups/getmessages?groupname="+groupname, nil)
+	req, _ := http.NewRequest(http.MethodGet, "http://localhost:4545/api/groups/getmessages?groupname="+groupname, nil)
 	req.Header.Set(echo.HeaderAuthorization, model.Token)
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -56,7 +56,7 @@ func CreateGroup(user *model.User, groupname string) {
 		CreationDate: time.Now(),
 	}
 	json, _ := json.Marshal(group)
-	req, _ := http.NewRequest(http.MethodPost, "localhost:4545/api/groups/newgroup", bytes.NewBuffer(json))
+	req, _ := http.NewRequest(http.MethodPost, "http://localhost:4545/api/groups/newgroup", bytes.NewBuffer(json))
 	req.Header.Set(echo.HeaderAuthorization, model.Token)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
@@ -77,12 +77,13 @@ func JoinGroup(user *model.User) {
 	var groupname string
 	println("Enter group name: ")
 	fmt.Scanln(&groupname)
-
-	req, _ := http.NewRequest(http.MethodGet, "localhost:4545/api/groups/joingroup?groupname="+groupname, nil)
+	json, _ := json.Marshal(user)
+	req, _ := http.NewRequest(http.MethodPost, "http://localhost:4545/api/groups/addmember?groupname="+groupname, bytes.NewBuffer(json))
 	req.Header.Set(echo.HeaderAuthorization, model.Token)
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		panic(err)
+		JoinGroup(user)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 200 {
@@ -105,13 +106,16 @@ func LoginMenu(user *model.User) {
 		fmt.Println("Group name :")
 		fmt.Scan(&groupname)
 		EnterGroupChat(user, groupname)
+		ClearConsole()
 	case 2:
 		var groupName string
 		fmt.Println("Group name :")
 		fmt.Scan(&groupName)
 		CreateGroup(user, groupName)
+		ClearConsole()
 	case 3:
 		JoinGroup(user)
+		ClearConsole()
 
 	}
 

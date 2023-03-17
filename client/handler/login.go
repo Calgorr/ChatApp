@@ -24,6 +24,5 @@ func Login(username, password string) (*model.User, error) {
 		return nil, fmt.Errorf("login failed")
 	}
 	model.Token = resp.Header.Get(echo.HeaderAuthorization)
-	fmt.Println(model.Token)
 	return user, nil
 }

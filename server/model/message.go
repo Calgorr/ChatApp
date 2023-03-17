@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -20,4 +21,12 @@ func (ms *Message) Bind(c echo.Context) (*Message, error) {
 		return nil, c.String(http.DefaultMaxHeaderBytes, "bad request")
 	}
 	return ms, nil
+}
+
+func (ms *Message) MarshalBinary() ([]byte, error) {
+	return json.Marshal(ms)
+}
+
+func (ms *Message) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, ms)
 }
