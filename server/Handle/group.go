@@ -52,5 +52,6 @@ func GetMessages(c echo.Context) error {
 	if err != nil {
 		return c.String(500, "internal server error")
 	}
+	fmt.Println(messages)
 	return c.JSON(200, messages)
 }

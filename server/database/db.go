@@ -96,7 +96,7 @@ func Publish(message *model.Message) error {
 }
 
 func GetMessages(groupName string) ([]model.Message, error) {
-	cmd := rdb1.Do(ctx, "keys", ".*"+groupName+".*")
+	cmd := rdb1.Do(ctx, "keys", groupName+"*")
 	if cmd.Err() != nil {
 		return nil, cmd.Err()
 	}
