@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -33,4 +34,12 @@ func (g *Group) Bind(c echo.Context) (*Group, error) {
 		return nil, c.String(http.DefaultMaxHeaderBytes, "bad request")
 	}
 	return g, nil
+}
+
+func (g *Group) MarshalBinary() ([]byte, error) {
+	return json.Marshal(g)
+}
+
+func (g *Group) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, g)
 }

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	authentication "github.com/Calgorr/ChatApp/server/Authentication"
 	handle "github.com/Calgorr/ChatApp/server/Handle"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -13,11 +14,11 @@ func RegisterRoutes(g *echo.Group) {
 	user.POST("/login", handle.Login)
 
 	message := g.Group("/messages")
-	message.Use(middleware.JWT([]byte("calgor")))
+	message.Use(authentication.ValidateJWT)
 	message.POST("/newmessage", handle.SendMessage)
 
 	groups := g.Group("/groups")
-	groups.Use(middleware.JWT([]byte("calgor")))
+	groups.Use(authentication.ValidateJWT)
 	groups.POST("/newgroup", handle.CreateGroup)
 	groups.POST("/addmember", handle.AddMember)
 	groups.POST("/getgroups", handle.GetGroups)
